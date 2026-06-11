@@ -1,0 +1,66 @@
+# ============================================================
+# EscolarBH - Orquestração Local para Simulação de Produção
+# ============================================================
+# Use este arquivo para subir toda a stack (API, Web, Geo) via:
+# docker-compose -f docker-compose.prod.yml up -d --build
+# ============================================================
+
+version: '3.8'
+
+services:
+  # 1. Banco de Dados Local (apenas se não estiver usando o Supabase Cloud)
+  # Se for usar o Supabase em Nuvem real, ignore/remova esse serviço
+  # e aponte os .env das apis para a nuvem.
+  
+  # 2. Backend (Spring Boot Kotlin)
+  escolarbh-api:
+    build:
+      context: ./escolarbh-api
+      dockerfile: Dockerfile
+    image: escolarbh-api:latest
+    container_name: escolarbh-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # Preencher via .env ou Secrets
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - escolar-net
+
+  # 3. Geo Service (Rust)
+  escolarbh-geo:
+    build:
+      context: ./escolarbh-geo
+      dockerfile: Dockerfile
+    image: escolarbh-geo:latest
+    container_name: escolarbh-geo
+    ports:
+      - "8081:8081"
+    environment:
+      - RUST_LOG=info
+    restart: unless-stopped
+    networks:
+      - escolar-net
+
+  # 4. Web Portal (React Vite + Nginx)
+  escolarbh-web:
+    build:
+      context: ./escolarbh-web
+      dockerfile: Dockerfile
+    image: escolarbh-web:latest
+    container_name: escolarbh-web
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    networks:
+      - escolar-net
+
+networks:
+  escolar-net:
+    driver: bridge

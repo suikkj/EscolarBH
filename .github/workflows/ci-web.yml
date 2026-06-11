@@ -1,0 +1,39 @@
+name: CI - EscolarBH Web (React/Vite)
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'escolarbh-web/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'escolarbh-web/**'
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./escolarbh-web
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: escolarbh-web/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Linter
+      run: npm run lint
+      # Remova ou comente caso não tenha script de lint configurado estritamente
+      continue-on-error: true
+
+    - name: Build
+      run: npm run build

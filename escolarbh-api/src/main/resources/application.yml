@@ -1,0 +1,169 @@
+# ============================================================
+# EscolarBH API — Configuração Spring Boot
+# ============================================================
+# Profile padrão: dev
+# Em produção: --spring.profiles.active=prod
+# ============================================================
+
+spring:
+  application:
+    name: escolarbh-api
+
+  # ── Banco de Dados (Supabase PostgreSQL) ──
+  # Conexão direta: jdbc:postgresql://db.{PROJECT_ID}.supabase.co:5432/postgres
+  # Pooler (prod): jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://db.degypfuqwoifstjxrsti.supabase.co:5432/postgres}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5        # Supabase free tier: max 60 connections (compartilhadas)
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-init-sql: "SET app.current_user_id = '00000000-0000-0000-0000-000000000000'"  # RLS default
+
+  # ── JPA / Hibernate ──
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway gerencia o schema — Hibernate apenas valida
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+    show-sql: false
+    open-in-view: false
+
+  # ── Flyway (Migrações) ──
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: "0"
+
+  # ── Redis ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 5000
+
+  # ── Jackson ──
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Sao_Paulo
+    default-property-inclusion: non_null
+
+# ── Servidor ──
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+# ── Actuator (Health, Metrics) ──
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# ── Configurações Customizadas ──
+escolarbh:
+  # Supabase
+  supabase:
+    project-id: ${SUPABASE_PROJECT_ID:degypfuqwoifstjxrsti}
+    url: ${SUPABASE_URL:https://degypfuqwoifstjxrsti.supabase.co}
+    anon-key: ${SUPABASE_ANON_KEY:}
+    service-key: ${SUPABASE_SERVICE_KEY:}
+
+  # JWT
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-256-bit-key-here}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}  # 24 horas
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}  # 7 dias
+
+  # Criptografia LGPD (AES-256-GCM)
+  encryption:
+    master-key: ${ENCRYPTION_MASTER_KEY:}  # Base64-encoded 256-bit key — OBRIGATÓRIO em prod
+    algorithm: AES/GCM/NoPadding
+    key-size: 256
+    iv-size: 12
+    tag-size: 128
+
+  # Google Maps API
+  google-maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+    geocoding-url: https://maps.googleapis.com/maps/api/geocode/json
+    rate-limit-per-second: 10
+
+  # Asaas (Gateway de Pagamento)
+  asaas:
+    api-key: ${ASAAS_API_KEY:}
+    base-url: ${ASAAS_BASE_URL:https://sandbox.asaas.com/api/v3}  # Sandbox por padrão
+    webhook-token: ${ASAAS_WEBHOOK_TOKEN:}  # Para validação HMAC
+
+  # ZapSign (Assinatura Eletrônica)
+  zapsign:
+    api-token: ${ZAPSIGN_API_TOKEN:}
+    base-url: https://api.zapsign.com.br/api/v1
+
+  # Firebase (Push Notifications)
+  firebase:
+    project-id: ${FIREBASE_PROJECT_ID:}
+    credentials-path: ${FIREBASE_CREDENTIALS_PATH:}
+
+  # Geofencing Rust Microservice
+  geofencing:
+    rust-service-url: ${GEO_SERVICE_URL:http://localhost:3001}
+    use-rust-service: ${USE_RUST_GEO:false}  # false = usa PostGIS direto, true = delega para Rust
+
+  # CORS
+  cors:
+    allowed-origins: ${CORS_ORIGIN:http://localhost:5173},${CORS_ORIGIN_MOBILE:http://localhost:19006}
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: "*"
+    max-age: 3600
+
+# ── Logging ──
+logging:
+  level:
+    root: INFO
+    com.escolarbh: DEBUG
+    org.hibernate.SQL: WARN
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# ── Profile: Produção ──
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  flyway:
+    baseline-on-migrate: false
+
+logging:
+  level:
+    root: WARN
+    com.escolarbh: INFO
+    org.hibernate.SQL: ERROR
+
+escolarbh:
+  asaas:
+    base-url: https://api.asaas.com/api/v3  # Produção

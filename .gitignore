@@ -1,0 +1,61 @@
+# ── IDE ──
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# ── Build ──
+build/
+target/
+out/
+.gradle/
+bin/
+
+# ── Kotlin/Java ──
+*.class
+*.jar
+*.war
+*.ear
+
+# ── Rust ──
+escolarbh-geo/target/
+Cargo.lock
+
+# ── Node.js (Frontend) ──
+node_modules/
+dist/
+.next/
+.nuxt/
+
+# ── Ambiente ──
+.env
+.env.local
+.env.production
+*.env
+
+# ── Credenciais (NUNCA commitar!) ──
+google-services.json
+*firebase-adminsdk*.json
+*.pem
+*.key
+*.p12
+*.jks
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──
+*.log
+logs/
+
+# ── Docker ──
+docker-compose.override.yml
+
+# ── Documentos e Imagens Root (Solicitado pelo Usuário) ──
+Modelo Contrato 2026 Allyson  (1).docx
+Icon.png
+Logo Escolar.png
+Logo.png
