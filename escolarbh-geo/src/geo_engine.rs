@@ -33,6 +33,7 @@ impl GeoEngine {
     ///
     /// Deve ser chamado na inicialização e quando um motorista
     /// atualiza sua área de atuação.
+    #[allow(dead_code)]
     pub fn load_polygons(&self, driver_polygons: Vec<DriverPolygon>) {
         let mut cache = self.polygons.write().unwrap();
         cache.clear();
@@ -93,6 +94,7 @@ impl GeoEngine {
 
     /// Verifica cobertura para múltiplos pontos (batch).
     /// Útil para validação de rotas inteiras.
+    #[allow(dead_code)]
     pub fn check_points_batch(
         &self,
         points: &[(f64, f64)],

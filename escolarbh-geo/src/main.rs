@@ -1,4 +1,4 @@
-use actix_web::{middleware, web, App, HttpResponse, HttpServer};
+use actix_web::{web, App, HttpResponse, HttpServer};
 use tracing_subscriber::EnvFilter;
 
 mod geo_engine;
