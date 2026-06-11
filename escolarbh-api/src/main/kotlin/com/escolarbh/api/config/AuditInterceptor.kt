@@ -39,10 +39,11 @@ class AuditInterceptor(
         }
 
         try {
-            // Executa a definição da variável de sessão (SET LOCAL vale apenas para a transaction atual)
-            entityManager.createNativeQuery("SET LOCAL app.current_user_id = :userId")
+            // Executa a definição da variável de sessão usando set_config() do PostgreSQL,
+            // pois o comando SET nativo não aceita parâmetros ($1). O 'true' indica que é LOCAL (apenas na transaction).
+            entityManager.createNativeQuery("SELECT set_config('app.current_user_id', :userId, true)")
                 .setParameter("userId", userId)
-                .executeUpdate()
+                .singleResult
         } catch (e: Exception) {
             // Se falhar (ex: SELECT puro sem transaction em alguns dialetos), tenta ignorar
             logger.debug("Não foi possível configurar app.current_user_id (Pode ser read-only context): {}", e.message)
