@@ -38,10 +38,8 @@ class NotificationController(
             id = UUID.randomUUID(),
             userId = request.targetUserId,
             title = request.title,
-            body = request.body,
-            type = "ANNOUNCEMENT",
-            read = false,
-            createdAt = java.time.OffsetDateTime.now()
+            message = request.body,
+            isRead = false
         )
         notificationRepository.save(notification)
 
