@@ -27,6 +27,12 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permita que o EscolarBH acesse sua localização em segundo plano para rastrear as viagens."
+        }
+      ],
       "expo-notifications"
     ],
     "extra": {
