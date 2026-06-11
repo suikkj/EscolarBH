@@ -67,7 +67,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:1.20.4")
     testImplementation("org.testcontainers:postgresql:1.20.4")
     testImplementation("io.mockk:mockk:1.13.13")
-    testImplementation("com.ninjasquad:springmockk:4.0.2") // For @MockkBean
+    testImplementation("com.ninja-squad:springmockk:4.0.2") // For @MockkBean
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0") // For WebClient tests
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
