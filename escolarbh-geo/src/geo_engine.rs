@@ -1,6 +1,6 @@
-use geo::{Contains, point, Polygon as GeoPolygon, LineString, Coord};
-use std::sync::RwLock;
 use crate::models::{DriverPolygon, MatchingDriver};
+use geo::{point, Contains, Coord, LineString, Polygon as GeoPolygon};
+use std::sync::RwLock;
 
 /// Engine de geofencing com cache de polígonos em memória.
 ///
@@ -139,7 +139,10 @@ mod tests {
 
         // Ponto dentro da Savassi (Praça da Savassi)
         let result = engine.check_point(-19.9230, -43.9380);
-        assert!(!result.is_empty(), "Ponto dentro do polígono deve retornar motorista");
+        assert!(
+            !result.is_empty(),
+            "Ponto dentro do polígono deve retornar motorista"
+        );
     }
 
     #[test]
@@ -149,7 +152,10 @@ mod tests {
 
         // Ponto fora (Pampulha)
         let result = engine.check_point(-19.8530, -43.9680);
-        assert!(result.is_empty(), "Ponto fora do polígono não deve retornar motoristas");
+        assert!(
+            result.is_empty(),
+            "Ponto fora do polígono não deve retornar motoristas"
+        );
     }
 
     #[test]
@@ -165,7 +171,7 @@ mod tests {
         let results = engine.check_points_batch(&points);
         assert_eq!(results.len(), 2);
         assert!(!results[0].2.is_empty()); // Primeiro ponto: dentro
-        assert!(results[1].2.is_empty());  // Segundo ponto: fora
+        assert!(results[1].2.is_empty()); // Segundo ponto: fora
     }
 
     #[test]

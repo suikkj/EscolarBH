@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient';
-import { Users, Plus, CheckCircle, Clock } from 'lucide-react';
+import { Users, Plus } from 'lucide-react';
 import AdesaoForm from '../../components/AdesaoForm';
 
 const Children: React.FC = () => {

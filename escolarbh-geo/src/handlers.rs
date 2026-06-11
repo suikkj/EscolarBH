@@ -1,6 +1,6 @@
-use actix_web::{web, HttpResponse};
 use crate::geo_engine::GeoEngine;
 use crate::models::*;
+use actix_web::{web, HttpResponse};
 
 /// Handler: POST /api/v1/geo/check
 ///
@@ -71,10 +71,7 @@ pub async fn check_coverage_batch(
             total_checked,
             total_covered,
         }),
-        message: format!(
-            "{}/{} pontos cobertos",
-            total_covered, total_checked
-        ),
+        message: format!("{}/{} pontos cobertos", total_covered, total_checked),
     })
 }
 

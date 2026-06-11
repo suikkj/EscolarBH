@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpServer, HttpResponse, middleware};
+use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 use tracing_subscriber::EnvFilter;
 
 mod geo_engine;
@@ -44,13 +44,23 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(geo_engine.clone())
             // Health check
-            .route("/health", web::get().to(|| async { HttpResponse::Ok().json(serde_json::json!({"status": "ok"})) }))
+            .route(
+                "/health",
+                web::get()
+                    .to(|| async { HttpResponse::Ok().json(serde_json::json!({"status": "ok"})) }),
+            )
             // Endpoints de geofencing
             .service(
                 web::scope("/api/v1/geo")
                     .route("/check", web::post().to(handlers::check_coverage))
-                    .route("/check-batch", web::post().to(handlers::check_coverage_batch))
-                    .route("/polygons/reload", web::post().to(handlers::reload_polygons))
+                    .route(
+                        "/check-batch",
+                        web::post().to(handlers::check_coverage_batch),
+                    )
+                    .route(
+                        "/polygons/reload",
+                        web::post().to(handlers::reload_polygons),
+                    ),
             )
     })
     .bind(("0.0.0.0", port))?
